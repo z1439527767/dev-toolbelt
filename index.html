@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev Toolbelt - Free Developer Tools</title>
+<meta name="description" content="Free online developer tools: JSON formatter, JWT debugger, Base64, UUID generator, timestamp converter. No ads, no tracking.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh}
+header{background:#161b22;border-bottom:1px solid #30363d;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;color:#58a6ff}
+.tabs{display:flex;gap:4px;padding:12px 24px;background:#161b22;border-bottom:1px solid #30363d;overflow-x:auto}
+.tab{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:transparent;color:#8b949e;cursor:pointer;white-space:nowrap;font-size:13px}
+.tab.active{background:#1f6feb;color:#fff;border-color:#1f6feb}
+.tab:hover:not(.active){background:#21262d}
+main{max-width:900px;margin:24px auto;padding:0 24px}
+.tool-panel{display:none}
+.tool-panel.active{display:block}
+textarea{width:100%;height:200px;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:12px;font-family:'SF Mono',monospace;font-size:13px;resize:vertical}
+input[type=text]{width:100%;background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:10px 12px;font-family:'SF Mono',monospace;font-size:13px}
+.btn{padding:8px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;margin:4px}
+.btn-primary{background:#238636;color:#fff}
+.btn-primary:hover{background:#2ea043}
+.btn-secondary{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+.output{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:16px;margin-top:12px;min-height:60px;font-family:'SF Mono',monospace;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.error{color:#f85149}
+.success{color:#3fb950}
+.row{display:flex;gap:12px;margin:12px 0;align-items:center;flex-wrap:wrap}
+.promo{background:linear-gradient(135deg,#1f6feb20,#23863620);border:1px solid #30363d;border-radius:8px;padding:16px;margin-top:24px;text-align:center}
+.promo h3{color:#58a6ff;margin-bottom:8px}
+.promo .btn{margin:8px}
+footer{text-align:center;padding:24px;color:#484f58;font-size:12px}
+footer a{color:#58a6ff}
+</style>
+</head>
+<body>
+<header>
+<h1>🛠 Dev Toolbelt</h1>
+<span style="color:#8b949e;font-size:13px">Free tools for developers</span>
+</header>
+
+<div class="tabs">
+<button class="tab active" onclick="switchTab('json')">JSON Formatter</button>
+<button class="tab" onclick="switchTab('jwt')">JWT Debugger</button>
+<button class="tab" onclick="switchTab('base64')">Base64</button>
+<button class="tab" onclick="switchTab('uuid')">UUID Gen</button>
+<button class="tab" onclick="switchTab('timestamp')">Timestamp</button>
+</div>
+
+<main>
+<!-- JSON -->
+<div id="json" class="tool-panel active">
+<h3 style="margin-bottom:8px">JSON Formatter / Validator</h3>
+<textarea id="jsonInput" placeholder='Paste JSON here... e.g. {"name":"test","value":123}'></textarea>
+<div class="row">
+<button class="btn btn-primary" onclick="formatJSON()">Format</button>
+<button class="btn btn-primary" onclick="minifyJSON()">Minify</button>
+<button class="btn btn-secondary" onclick="validateJSON()">Validate</button>
+<button class="btn btn-secondary" onclick="document.getElementById('jsonInput').value=''">Clear</button>
+</div>
+<div id="jsonOutput" class="output"></div>
+</div>
+
+<!-- JWT -->
+<div id="jwt" class="tool-panel">
+<h3 style="margin-bottom:8px">JWT Debugger</h3>
+<input type="text" id="jwtInput" placeholder="Paste JWT token here...">
+<div class="row">
+<button class="btn btn-primary" onclick="decodeJWT()">Decode</button>
+<button class="btn btn-secondary" onclick="document.getElementById('jwtInput').value=''">Clear</button>
+</div>
+<div id="jwtOutput" class="output"></div>
+</div>
+
+<!-- Base64 -->
+<div id="base64" class="tool-panel">
+<h3 style="margin-bottom:8px">Base64 Encoder / Decoder</h3>
+<textarea id="base64Input" placeholder="Enter text to encode/decode..."></textarea>
+<div class="row">
+<button class="btn btn-primary" onclick="base64Encode()">Encode</button>
+<button class="btn btn-primary" onclick="base64Decode()">Decode</button>
+<button class="btn btn-secondary" onclick="document.getElementById('base64Input').value=''">Clear</button>
+</div>
+<div id="base64Output" class="output"></div>
+</div>
+
+<!-- UUID -->
+<div id="uuid" class="tool-panel">
+<h3 style="margin-bottom:8px">UUID Generator</h3>
+<div class="row">
+<button class="btn btn-primary" onclick="generateUUID(4)">UUID v4 (Random)</button>
+<button class="btn btn-primary" onclick="generateUUID(1)">UUID v1 (Time-based)</button>
+<button class="btn btn-primary" onclick="generateBulk()">Generate 10x v4</button>
+</div>
+<div id="uuidOutput" class="output"></div>
+</div>
+
+<!-- Timestamp -->
+<div id="timestamp" class="tool-panel">
+<h3 style="margin-bottom:8px">Unix Timestamp Converter</h3>
+<div class="row">
+<input type="text" id="tsInput" placeholder="Enter Unix timestamp or ISO date..." style="flex:1">
+<button class="btn btn-primary" onclick="convertTimestamp()">Convert</button>
+<button class="btn btn-secondary" onclick="document.getElementById('tsInput').value=Math.floor(Date.now()/1000);convertTimestamp()">Now</button>
+</div>
+<div id="tsOutput" class="output"></div>
+</div>
+
+<!-- Promo -->
+<div class="promo">
+<h3>🔒 Need more power?</h3>
+<p style="color:#8b949e;margin-bottom:8px">Offline Security IDE — AI code scanner, 100% local. Ditch cloud dependency.</p>
+<a href="https://zestful572.gumroad.com/l/vjpntz" class="btn btn-primary" target="_blank">Get Security IDE - $49</a>
+<a href="https://zestful572.gumroad.com" class="btn btn-secondary" target="_blank">All Products</a>
+</div>
+</main>
+
+<footer>
+<p>100% free. No ads. No tracking. No server — everything runs in your browser.</p>
+<p><a href="https://dataapis.loca.lt">Data APIs for AI Agents</a> · <a href="https://zestful572.gumroad.com">Gumroad Store</a></p>
+</footer>
+
+<script>
+function switchTab(name) {
+document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.getElementById(name).classList.add('active');
+event.target.classList.add('active');
+}
+
+function formatJSON() {
+var input = document.getElementById('jsonInput').value;
+try {
+var obj = JSON.parse(input);
+document.getElementById('jsonOutput').innerHTML = '<span class="success">✓ Valid JSON</span>\n' + JSON.stringify(obj, null, 2);
+} catch(e) {
+document.getElementById('jsonOutput').innerHTML = '<span class="error">✗ Invalid JSON: ' + e.message + '</span>';
+}
+}
+
+function minifyJSON() {
+var input = document.getElementById('jsonInput').value;
+try {
+var obj = JSON.parse(input);
+document.getElementById('jsonOutput').innerHTML = '<span class="success">✓ Minified</span>\n' + JSON.stringify(obj);
+} catch(e) {
+document.getElementById('jsonOutput').innerHTML = '<span class="error">✗ ' + e.message + '</span>';
+}
+}
+
+function validateJSON() {
+var input = document.getElementById('jsonInput').value;
+try {
+JSON.parse(input);
+var size = new Blob([input]).size;
+document.getElementById('jsonOutput').innerHTML = '<span class="success">✓ Valid JSON</span>\nSize: ' + (size/1024).toFixed(1) + ' KB\nKeys: counting...';
+var obj = JSON.parse(input);
+var countKeys = function(o,d){if(typeof o!=='object'||!o)return d;for(var k in o){d++;d=countKeys(o[k],d)}return d;};
+document.getElementById('jsonOutput').innerHTML = '<span class="success">✓ Valid JSON</span>\nSize: ' + (size/1024).toFixed(1) + ' KB\nTotal keys: ' + countKeys(obj,0);
+} catch(e) {
+document.getElementById('jsonOutput').innerHTML = '<span class="error">✗ Invalid: ' + e.message + '</span>';
+}
+}
+
+function decodeJWT() {
+var token = document.getElementById('jwtInput').value.trim();
+try {
+var parts = token.split('.');
+if(parts.length !== 3) throw new Error('Not a valid JWT (need 3 parts)');
+var header = JSON.parse(atob(parts[0]));
+var payload = JSON.parse(atob(parts[1]));
+var exp = payload.exp ? new Date(payload.exp*1000) : null;
+var now = new Date();
+var expired = exp && exp < now;
+document.getElementById('jwtOutput').innerHTML = 
+'<strong>Header:</strong>\n' + JSON.stringify(header, null, 2) + '\n\n' +
+'<strong>Payload:</strong>\n' + JSON.stringify(payload, null, 2) + '\n\n' +
+(exp ? '<strong>Expires:</strong> ' + exp.toISOString() + (expired ? ' <span class="error">(EXPIRED)</span>' : ' <span class="success">(valid)</span>') : '');
+} catch(e) {
+document.getElementById('jwtOutput').innerHTML = '<span class="error">✗ ' + e.message + '</span>';
+}
+}
+
+function base64Encode() {
+var input = document.getElementById('base64Input').value;
+try { document.getElementById('base64Output').innerHTML = '<span class="success">✓ Encoded</span>\n' + btoa(input); }
+catch(e) { document.getElementById('base64Output').innerHTML = '<span class="error">✗ ' + e.message + '</span>'; }
+}
+
+function base64Decode() {
+var input = document.getElementById('base64Input').value.trim();
+try { document.getElementById('base64Output').innerHTML = '<span class="success">✓ Decoded</span>\n' + atob(input); }
+catch(e) { document.getElementById('base64Output').innerHTML = '<span class="error">✗ ' + e.message + '</span>'; }
+}
+
+function generateUUID(v) {
+var uuid;
+if(v===1) {
+var now = Date.now();
+uuid = 'xxxxxxxx-xxxx-1xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+var r = (now + Math.random()*16)%16|0; now=Math.floor(now/16);
+return (c==='x'?r:(r&0x3|0x8)).toString(16);
+});
+} else {
+uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+var r = Math.random()*16|0, v = c==='x'?r:(r&0x3|0x8);
+return v.toString(16);
+});
+}
+document.getElementById('uuidOutput').innerHTML = uuid;
+navigator.clipboard.writeText(uuid).then(()=>{
+document.getElementById('uuidOutput').innerHTML += '\n<span class="success">📋 Copied!</span>';
+});
+}
+
+function generateBulk() {
+var uuids = [];
+for(var i=0;i<10;i++) {
+uuids.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);}));
+}
+document.getElementById('uuidOutput').innerHTML = uuids.join('\n');
+}
+
+function convertTimestamp() {
+var input = document.getElementById('tsInput').value.trim();
+var ts = parseInt(input);
+var date;
+if(!isNaN(ts) && ts > 1000000000) {
+date = new Date(ts*1000);
+document.getElementById('tsOutput').innerHTML = 
+'<strong>Unix:</strong> ' + ts + '\n' +
+'<strong>UTC:</strong> ' + date.toUTCString() + '\n' +
+'<strong>ISO:</strong> ' + date.toISOString() + '\n' +
+'<strong>Local:</strong> ' + date.toString();
+} else {
+date = new Date(input);
+if(isNaN(date.getTime())) {
+document.getElementById('tsOutput').innerHTML = '<span class="error">Invalid timestamp or date</span>';
+return;
+}
+document.getElementById('tsOutput').innerHTML = 
+'<strong>Unix (s):</strong> ' + Math.floor(date.getTime()/1000) + '\n' +
+'<strong>Unix (ms):</strong> ' + date.getTime() + '\n' +
+'<strong>UTC:</strong> ' + date.toUTCString() + '\n' +
+'<strong>ISO:</strong> ' + date.toISOString();
+}
+}
+</script>
+</body>
+</html>
